@@ -11,10 +11,10 @@ TagManager:
   - Ground
   - Water
   - UI
-  - Piso
-  - 
-  - 
-  - 
+  - Player
+  - Background
+  - Enemy
+  - Interactable
   - 
   - 
   - 
