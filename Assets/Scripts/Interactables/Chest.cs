@@ -2,11 +2,10 @@ using UnityEngine;
 
 public class Chest : MonoBehaviour, IInteractable
 {
-    [SerializeField] private int flyAmount = 5;
+    [SerializeField] private int antAmount = 5;
     [SerializeField] private bool isOpen = false;
     [SerializeField] private GameObject antPrefab;
 
-    [Header("Sprites de Estado")]
     [SerializeField] private Sprite closedSprite;
     [SerializeField] private Sprite openSprite;
 
@@ -42,19 +41,24 @@ public class Chest : MonoBehaviour, IInteractable
 
     public void SpawnAnt()
     {
-        for (int i = 0; i < flyAmount; i++)
+        if (antPrefab == null)
+        {
+            Debug.LogWarning("No anda el prefab");
+            return;
+        }
+
+        for (int i = 0; i < antAmount; i++)
         {
             if (antPrefab != null)
             {
-                Vector3 spawnOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0.5f, 0);
+                Vector3 spawnOffset = new Vector3(Random.Range(-0.8f, 0.8f), 1.2f, 0);
                 Instantiate(antPrefab, transform.position + spawnOffset, Quaternion.identity);
             }
         }
     }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("PlayerAttack") || collision.GetComponent<Player>() != null)
+        if (collision.GetComponent<Player>() != null || collision.CompareTag("Player") || collision.gameObject.name.Contains("Attack"))
         {
             Open();
         }

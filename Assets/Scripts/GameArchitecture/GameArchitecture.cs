@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-// --- ENUMS ---
 public enum GameState
 {
     MainMenu,
@@ -23,7 +23,6 @@ public enum SoundEffect
     Defeat
 }
 
-// --- STRUCTS ---
 [System.Serializable]
 public struct PlayerStats
 {
@@ -41,10 +40,8 @@ public struct PlayerStats
     }
 }
 
-// --- DELEGATES ---
 public delegate void GameStateEventHandler(GameState newState);
 
-// --- GENERICS (Singleton Genérico) ---
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
@@ -54,7 +51,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<T>();
+                _instance = FindFirstObjectByType<T>();
                 if (_instance == null)
                 {
                     GameObject go = new GameObject(typeof(T).Name);
@@ -65,11 +62,14 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+
+
     protected virtual void Awake()
     {
         if (_instance == null)
         {
             _instance = this as T;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
@@ -79,7 +79,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     }
 }
 
-// --- EXTENSIÓN DE CLASES ---
 public static class PlayerExtensions
 {
     public static bool IsAlive(this Player player)

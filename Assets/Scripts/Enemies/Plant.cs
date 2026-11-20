@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Plant : Enemy
 {
-    [SerializeField] private float attackRange = 5f;
+    [SerializeField] private float attackRange = 8f;
     [SerializeField] private float attackCooldown = 2f;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
@@ -17,7 +17,7 @@ public class Plant : Enemy
 
     private void Update()
     {
-        Player player = FindObjectOfType<Player>();
+        Player player = FindFirstObjectByType<Player>();
         if (player != null && DetectPlayer(player))
         {
             if (Time.time >= lastAttackTime + attackCooldown)
@@ -37,7 +37,7 @@ public class Plant : Enemy
     public override void Attack()
     {
         if (animator != null) animator.SetTrigger("Attack");
-        ThrowProjectile();
+        Invoke(nameof(ThrowProjectile), 0.25f);
     }
 
     public override bool DetectPlayer(Player player)
@@ -49,12 +49,14 @@ public class Plant : Enemy
     public void ThrowProjectile()
     {
         if (projectilePrefab == null) return;
+
         Transform spawnPos = firePoint != null ? firePoint : transform;
         GameObject projObj = Instantiate(projectilePrefab, spawnPos.position, Quaternion.identity);
+
         Projectile projectile = projObj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            Player player = FindObjectOfType<Player>();
+            Player player = FindFirstObjectByType<Player>();
             Vector2 dir = player != null ? (player.transform.position - transform.position).normalized : Vector2.left;
             projectile.Launch(dir);
         }

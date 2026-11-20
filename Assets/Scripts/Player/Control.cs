@@ -23,13 +23,13 @@ public class Control : MonoBehaviour
         {
             player.MovementComponent.Move(horizontalInput);
 
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
                 player.MovementComponent.Jump();
             }
         }
 
-        if (Input.GetButtonDown("Fire1") && player.AttackComponent != null)
+        if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.J) && player.AttackComponent != null)
         {
             player.AttackComponent.AttackTarget();
         }

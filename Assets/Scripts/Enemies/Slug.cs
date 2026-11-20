@@ -9,12 +9,14 @@ public class Slug : Enemy
 
     private Rigidbody2D rb;
     private Animator animator;
+    private SpriteRenderer spriteRenderer;
     private float lastAttackTime;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
@@ -24,24 +26,27 @@ public class Slug : Enemy
         {
             float distance = Vector2.Distance(transform.position, player.transform.position);
 
-            if (distance <= attackRange)
-            {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+            if (spriteRenderer != null)
+            { 
+                spriteRenderer.flipX = player.transform.position.x < transform.position.x;
             }
 
-            if (Time.time >= lastAttackTime + attackCooldown)
-            {
-                Attack();
-                lastAttackTime = Time.time;
+            if (distance <= attackRange) 
+                { rb.linearVelocity = new Vector2(0, rb.linearVelocity.y); 
+                if (Time.time >= lastAttackTime + attackCooldown) 
+                {
+                    Attack(); 
+                    lastAttackTime = Time.time; 
+                } 
             }
-
-            else
-            {
-                float dir = player.transform.position.x > transform.position.x ? 1f : -1f;
-                rb.linearVelocity = new Vector2(dir * moveSpeed, rb.linearVelocity.y);
+            else 
+            { 
+                float dir = player.transform.position.x > transform.position.x ? 1f : -1f; 
+                rb.linearVelocity = new Vector2(dir * moveSpeed, rb.linearVelocity.y); 
             }
         }
     }
+
     public override void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
@@ -51,6 +56,7 @@ public class Slug : Enemy
     public override void Attack()
     {
         if (animator != null) animator.SetTrigger("Attack");
+
         Player player = Object.FindFirstObjectByType<Player>();
         if (player != null && Vector2.Distance(transform.position, player.transform.position) <= attackRange)
         {
@@ -63,7 +69,4 @@ public class Slug : Enemy
         if (player == null) return false;
         return Vector2.Distance(transform.position, player.transform.position) <= detectionRange;
     }
-    
-
-
 }

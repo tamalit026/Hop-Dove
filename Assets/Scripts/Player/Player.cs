@@ -3,11 +3,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Salud")]
     [SerializeField] private int health = 100;
     [SerializeField] private int maxHealth = 100;
 
-    [Header("Modificadores de Power-Ups")]
     [SerializeField] private bool canDoubleJump = false;
     [SerializeField] private float coinsMultiplier = 1.0f;
     [SerializeField] private bool isInvulnerable = false;
@@ -53,7 +51,7 @@ public class Player : MonoBehaviour
             OnPlayerDied?.Invoke();
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.LoadDefeat();
+                GameManager.Instance.TriggerDefeat();
             }
         }
         else

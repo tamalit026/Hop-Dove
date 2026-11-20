@@ -1,8 +1,8 @@
 using UnityEngine;
+using static Unity.Burst.Intrinsics.X86.Avx;
 
 public class Eagle : Enemy
 {
-    [SerializeField] private float flightHeight = 8f;
     [SerializeField] private float grabHeight = 2f;
 
     private Player grabbedPlayer;
@@ -12,7 +12,14 @@ public class Eagle : Enemy
     {
         animator = GetComponent<Animator>();
     }
-
+    private void Update()
+    {
+        Player player = FindFirstObjectByType<Player>();
+        if (player != null && DetectPlayer(player))
+        {
+            Attack();
+        }
+    }
     public override void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
@@ -26,7 +33,7 @@ public class Eagle : Enemy
     public override void Attack()
     {
         if (animator != null) animator.SetTrigger("Attack");
-        Player player = FindObjectOfType<Player>();
+        Player player = FindFirstObjectByType<Player>();
         if (player != null && DetectPlayer(player))
         {
             GrabPlayer(player);

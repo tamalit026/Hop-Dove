@@ -19,6 +19,11 @@ public class UIManager : MonoBehaviour
         ScoreManager.OnScoreChanged -= UpdateScore;
     }
 
+    private void Start()
+    {
+        int initialScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetScore() : 0;
+        UpdateScore(initialScore);
+    }
     public void UpdateHealth(int current, int max)
     {
         if (healthBarFill != null && max > 0)

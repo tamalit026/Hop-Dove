@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acdd3f06beeaab84d9583c4c4d2d3d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flyAmount: 5
+  antAmount: 5
   isOpen: 0
   antPrefab: {fileID: 0}
   closedSprite: {fileID: -6834524911116659543, guid: 50570414141430b428f7e1492f9afd47, type: 3}
