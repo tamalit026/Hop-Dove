@@ -9,7 +9,6 @@ public class Dragonfly : MonoBehaviour, IInteractable
         if (powerUp != null && player != null)
         {
             powerUp.Activate(player);
-            Destroy(gameObject);
         }
     }
 

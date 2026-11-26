@@ -28,7 +28,7 @@ public class Slug : Enemy
 
             if (spriteRenderer != null)
             { 
-                spriteRenderer.flipX = player.transform.position.x < transform.position.x;
+                spriteRenderer.flipX = player.transform.position.x > transform.position.x;
             }
 
             if (distance <= attackRange) 

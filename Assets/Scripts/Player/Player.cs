@@ -40,10 +40,18 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        
+
+        if (isInvulnerable)
+        {
+            Debug.Log("Daño bloqueado por invulnerabilidad");
+            return;
+        }
+
         if (isInvulnerable) return;
 
-        health = Mathf.Max(0, health - damage);
-        OnHealthChanged?.Invoke(health, maxHealth);
+            health = Mathf.Max(0, health - damage);
+            OnHealthChanged?.Invoke(health, maxHealth);
 
         if (health <= 0)
         {

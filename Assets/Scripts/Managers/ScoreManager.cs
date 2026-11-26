@@ -15,6 +15,12 @@ public class ScoreManager : Singleton<ScoreManager>
         OnScoreChanged?.Invoke(currentScore);
     }
 
+    public void ResetScore()
+    {
+        currentScore = 0;
+        OnScoreChanged?.Invoke(currentScore);
+    }
+
     public int GetScore() => currentScore;
     public int GetTotalScore() => totalScore;
 }
