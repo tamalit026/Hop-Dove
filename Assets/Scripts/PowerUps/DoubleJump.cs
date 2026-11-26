@@ -5,7 +5,7 @@ public class DoubleJump : PowerUp
 {
     private BoxCollider2D collider;
     private SpriteRenderer spriteRenderer;
-    void start()
+    void Start()
     {
         collider = GetComponent<BoxCollider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
