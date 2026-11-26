@@ -3,6 +3,14 @@ using UnityEngine;
 
 public class DoubleJump : PowerUp
 {
+    private BoxCollider2D collider;
+    private SpriteRenderer spriteRenderer;
+    void start()
+    {
+        collider = GetComponent<BoxCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     public override void Activate(Player player)
     {
         SetDoubleJump(player, true);
