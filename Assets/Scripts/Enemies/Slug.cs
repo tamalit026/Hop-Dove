@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//TP2 - Agustina Mendiri
 public sealed class Slug : Enemy
 {
     [SerializeField] private float attackRange = 1.5f;

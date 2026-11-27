@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+//TP2 - Itamar Graterol
 public sealed class Eagle : Enemy
 {
     [SerializeField] private float grabHeight = 1.5f;    

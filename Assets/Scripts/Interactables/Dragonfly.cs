@@ -1,5 +1,7 @@
 using UnityEngine;
 
+//TP2 - Itamar Graterol
+
 public sealed class Dragonfly : MonoBehaviour, IInteractable
 {
     [SerializeField] private PowerUp powerUp;

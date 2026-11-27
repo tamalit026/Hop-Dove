@@ -1,5 +1,7 @@
 using UnityEngine;
 
+//TP2 - Itamar Graterol
+
 public sealed class Caterpillar : MonoBehaviour, IInteractable
 {
     [SerializeField] private int healAmount = 25;

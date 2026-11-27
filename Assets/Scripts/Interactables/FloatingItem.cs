@@ -1,5 +1,7 @@
 using UnityEngine;
 
+//TP2 - Itamar Graterol
+
 public class FloatingItem : MonoBehaviour
 {
     [Header("Configuración de Flotación")]

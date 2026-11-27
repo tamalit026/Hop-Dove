@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// TP2 - Itamar Graterol
 public sealed class Player : MonoBehaviour
 {
     [SerializeField] private int health;

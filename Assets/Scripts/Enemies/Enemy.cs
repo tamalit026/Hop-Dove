@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//TP2 - Agustina Mendiri
 public abstract class Enemy : MonoBehaviour
 {
     [SerializeField] protected int health = 50;
