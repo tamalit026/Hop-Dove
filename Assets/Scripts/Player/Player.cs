@@ -1,18 +1,18 @@
 using System;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public sealed class Player : MonoBehaviour
 {
     [SerializeField] private int health = 100;
     [SerializeField] private int maxHealth = 100;
 
-    [SerializeField] private bool canDoubleJump = false;
+    [SerializeField] private float damageMultiplier = 1f;
     [SerializeField] private float coinsMultiplier = 1.0f;
     [SerializeField] private bool isInvulnerable = false;
 
     public int Health => health;
     public int MaxHealth => maxHealth;
-    public bool CanDoubleJump { get => canDoubleJump; set => canDoubleJump = value; }
+    public float DamageMultiplier { get => damageMultiplier; set => damageMultiplier = value; }
     public float CoinsMultiplier { get => coinsMultiplier; set => coinsMultiplier = value; }
     public bool IsInvulnerable { get => isInvulnerable; set => isInvulnerable = value; }
 
@@ -32,7 +32,6 @@ public class Player : MonoBehaviour
         ControlComponent = GetComponent<Control>();
         animator = GetComponent<Animator>();
     }
-
     private void Start()
     {
         OnHealthChanged?.Invoke(health, maxHealth);
@@ -40,18 +39,15 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        
 
-        if (isInvulnerable)
-        {
-            Debug.Log("Daño bloqueado por invulnerabilidad");
-            return;
-        }
+        if (isInvulnerable) return;
 
         if (isInvulnerable) return;
 
             health = Mathf.Max(0, health - damage);
             OnHealthChanged?.Invoke(health, maxHealth);
+
+        AudioManager.Instance.PlaySFX(SoundEffect.TakeDamage);
 
         if (health <= 0)
         {
@@ -67,13 +63,11 @@ public class Player : MonoBehaviour
             if (animator != null) animator.SetTrigger("Hurt");
         }
     }
-
     public void Heal(int amount)
     {
         health = Mathf.Min(maxHealth, health + amount);
         OnHealthChanged?.Invoke(health, maxHealth);
     }
-
     public void AddScore(int amount)
     {
         int finalAmount = Mathf.RoundToInt(amount * coinsMultiplier);

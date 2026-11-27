@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//TP2 - Eileen Moscovich.
 public class Menu : MonoBehaviour
 {
     [SerializeField] private GameObject mainPanel; 

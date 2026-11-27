@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Caterpillar : MonoBehaviour, IInteractable
+public sealed class Caterpillar : MonoBehaviour, IInteractable
 {
     [SerializeField] private int healAmount = 25;
 
@@ -8,6 +8,7 @@ public class Caterpillar : MonoBehaviour, IInteractable
     {
         if (player != null)
         {
+            AudioManager.Instance.PlaySFX(SoundEffect.Heal);
             player.Heal(healAmount);
             Destroy(gameObject);
         }

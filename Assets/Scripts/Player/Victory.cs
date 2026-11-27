@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//TP2 - Eileen Moscovich.
 public class Victory : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)

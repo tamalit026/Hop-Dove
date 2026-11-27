@@ -3,10 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private GameObject victoryPanel; 
-    [SerializeField] private GameObject defeatPanel;
     [SerializeField] private string mainMenuSceneName = "MainMenu";
-
+    private LevelUIManager levelUIManager;
     protected override void Awake()
     {
         base.Awake();
@@ -21,36 +19,35 @@ public class GameManager : Singleton<GameManager>
     {
         Time.timeScale = 1f;
 
-        victoryPanel = GameObject.Find("VictoryPanel");
-        defeatPanel = GameObject.Find("DefeatPanel");
+        levelUIManager = FindFirstObjectByType<LevelUIManager>();
 
-        if (victoryPanel != null)
-            victoryPanel.SetActive(false);
-
-        if (defeatPanel != null)
-            defeatPanel.SetActive(false);
+        if (levelUIManager != null)
+            levelUIManager.HidePanels();
     }
 
     public void TriggerVictory()
     {
 
         Time.timeScale = 0f;
+        AudioManager.Instance.PlaySFX(SoundEffect.Victory);
 
-        if (victoryPanel != null)
-        {
-            victoryPanel.SetActive(true);
-        }
+        if (levelUIManager != null)
+            levelUIManager.ShowVictory();
+
     }
-
     public void TriggerDefeat()
     {
         Time.timeScale = 0f;
-        if (defeatPanel != null) defeatPanel.SetActive(true); 
+        AudioManager.Instance.PlaySFX(SoundEffect.Defeat);
+
+        if (levelUIManager != null)
+            levelUIManager.ShowDefeat();
     }
 
     public void RestartLevel()
     {
         Time.timeScale = 1f;
+        ScoreManager.Instance.ResetScore();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -64,9 +61,16 @@ public class GameManager : Singleton<GameManager>
         SceneManager.LoadScene(mainMenuSceneName);
     }
 
-    public static event GameStateEventHandler OnGameStateChanged; 
-    public void SetGameState(GameState newState) 
-    { 
-        OnGameStateChanged?.Invoke(newState); 
+    public static event GameStateEventHandler OnGameStateChanged;
+    public GameState CurrentState { get; private set; }
+    public void SetGameState(GameState newState)
+    {
+        CurrentState = newState;
+        OnGameStateChanged?.Invoke(newState);
+    }
+    public void QuitGame()
+    {
+        Time.timeScale = 1f;
+        Application.Quit();
     }
 }

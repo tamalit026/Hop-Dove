@@ -1,19 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CamaraController : MonoBehaviour
+//TP2 - Eileen Moscovich.
+public sealed class CameraController : MonoBehaviour
 {
-    public Transform objetivo;
-    public float velocidadCamara = 0.025f;
-    public Vector3 desplazamiento;
-
+    [SerializeField] private Transform target;
+    [SerializeField] private float smoothSpeed = 5f;
+    [SerializeField] private Vector3 offset;
     private void LateUpdate()
     {
-        Vector3 posicionDeseada = objetivo.position + desplazamiento;
+        if (target == null) return;
 
-        Vector3 posicionSuavizada = Vector3.Lerp(transform.position, posicionDeseada, velocidadCamara);
+        Vector3 desiredPosition = target.position + offset;
 
-        transform.position = posicionSuavizada;
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position,desiredPosition,smoothSpeed * Time.deltaTime);
+
+        transform.position = smoothedPosition;
     }
 }

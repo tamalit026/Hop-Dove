@@ -1,53 +1,106 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+//TP2 - Eileen Moscovich.
 public class AudioManager : Singleton<AudioManager>
 {
-    [SerializeField] private AudioClip music;
-    [SerializeField] private AudioClip[] soundEffects;
-    [SerializeField] private AudioSource audioSource;
+    [System.Serializable]
+    private class SoundEffectEntry
+    {
+        public SoundEffect effect;
+        public AudioClip clip;
+    }
 
-    private Dictionary<SoundEffect, AudioClip> sfxDictionary = new Dictionary<SoundEffect, AudioClip>();
+    [SerializeField] private AudioClip menuMusic;
+    [SerializeField] private AudioClip levelMusic;
+
+    [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource sfxSource;
+
+    [SerializeField] private SoundEffectEntry[] soundEffects;
+
+    private Dictionary<SoundEffect, AudioClip> sfxDictionary =
+        new Dictionary<SoundEffect, AudioClip>();
 
     protected override void Awake()
     {
         base.Awake();
-        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
-        InitializeDictionary();
-    }
 
+        if (musicSource == null)
+            musicSource = gameObject.AddComponent<AudioSource>();
+
+        if (sfxSource == null)
+            sfxSource = gameObject.AddComponent<AudioSource>();
+
+        musicSource.loop = true;
+        musicSource.playOnAwake = false;
+
+        sfxSource.playOnAwake = false;
+
+        InitializeDictionary();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    private void Start()
+    {
+        PlayMusicForCurrentScene();
+    }
     private void InitializeDictionary()
     {
-        for (int i = 0; i < soundEffects.Length; i++)
+        sfxDictionary.Clear();
+
+        foreach (SoundEffectEntry entry in soundEffects)
         {
-            if (Enum.IsDefined(typeof(SoundEffect), i))
-            {
-                sfxDictionary[(SoundEffect)i] = soundEffects[i];
-            }
+            if (entry.clip != null)
+                sfxDictionary[entry.effect] = entry.clip;
         }
     }
-
-    public void PlayMusic()
+    public void PlayMenuMusic()
     {
-        if (music != null && audioSource != null)
-        {
-            audioSource.clip = music;
-            audioSource.loop = true;
-            audioSource.Play();
-        }
+        PlayMusic(menuMusic);
+    }
+    public void PlayLevelMusic()
+    {
+        PlayMusic(levelMusic);
+    }
+    private void PlayMusic(AudioClip clip)
+    {
+        if (clip == null || musicSource == null)
+            return;
+
+        if (musicSource.clip == clip && musicSource.isPlaying)
+            return;
+
+        musicSource.clip = clip;
+        musicSource.Play();
     }
 
     public void PlaySFX(SoundEffect effect)
     {
-        if (sfxDictionary.TryGetValue(effect, out AudioClip clip) && clip != null)
+        if (sfxDictionary.TryGetValue(effect, out AudioClip clip))
         {
-            audioSource.PlayOneShot(clip);
+            if (clip != null && sfxSource != null)
+                sfxSource.PlayOneShot(clip);
         }
     }
-
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        PlayMusicForCurrentScene();
+    }
+    private void PlayMusicForCurrentScene()
+    {
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            PlayMenuMusic();
+        }
+        else
+        {
+            PlayLevelMusic();
+        }
+    }
     public void StopMusic()
     {
-        if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+        if (musicSource != null)
+            musicSource.Stop();
     }
 }

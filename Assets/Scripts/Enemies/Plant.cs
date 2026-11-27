@@ -1,64 +1,61 @@
 using UnityEngine;
 
-public class Plant : Enemy
+public sealed class Plant : Enemy
 {
     [SerializeField] private float attackRange = 8f;
     [SerializeField] private float attackCooldown = 2f;
+    [SerializeField] private float attackDelay = 0.25f;  
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
 
     private float lastAttackTime;
-    private Animator animator;
 
-    private void Awake()
+    protected override void Awake()
     {
-        animator = GetComponent<Animator>();
+        base.Awake();                      
+        lastAttackTime = -attackCooldown;  
     }
-
-    private void Update()
+    protected override void Update()
     {
-        Player player = FindFirstObjectByType<Player>();
-        if (player != null && DetectPlayer(player))
-        {
-            if (Time.time >= lastAttackTime + attackCooldown)
-            {
-                Attack();
-                lastAttackTime = Time.time;
-            }
-        }
-    }
+        base.Update();                   
 
-    public override void TakeDamage(int damageAmount)
-    {
-        health -= damageAmount;
-        if (health <= 0) Destroy(gameObject);
-    }
+        if (isDead || targetPlayer == null) return;
+        if (!DetectPlayer(targetPlayer)) return;
+        if (Time.time < lastAttackTime + attackCooldown) return;
 
+        lastAttackTime = Time.time;
+        Attack();
+    }
     public override void Attack()
     {
         if (animator != null) animator.SetTrigger("Attack");
-        Invoke(nameof(ThrowProjectile), 0.25f);
+        Invoke(nameof(ThrowProjectile), attackDelay);
     }
 
+    public void ThrowProjectile()
+    {
+        if (isDead) return;                
+        if (projectilePrefab == null) return;
+
+        Transform spawnPos = firePoint != null ? firePoint : transform;
+        GameObject projObj = Instantiate(projectilePrefab, spawnPos.position, spawnPos.rotation);
+
+        Projectile projectile = projObj.GetComponent<Projectile>();
+        if (projectile == null) return;
+
+        Vector2 dir = spawnPos.right;
+
+        projectile.Launch(dir);
+    }
     public override bool DetectPlayer(Player player)
     {
         if (player == null) return false;
         return Vector2.Distance(transform.position, player.transform.position) <= attackRange;
     }
 
-    public void ThrowProjectile()
+    protected override void Die()
     {
-        if (projectilePrefab == null) return;
-
-        Transform spawnPos = firePoint != null ? firePoint : transform;
-        GameObject projObj = Instantiate(projectilePrefab, spawnPos.position, Quaternion.identity);
-
-        Projectile projectile = projObj.GetComponent<Projectile>();
-        if (projectile != null)
-        {
-            Player player = FindFirstObjectByType<Player>();
-            Vector2 dir = player != null ? (player.transform.position - transform.position).normalized : Vector2.left;
-            projectile.Launch(dir);
-        }
+        CancelInvoke();   
+        base.Die();
     }
 }

@@ -150,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duration: 5
+  activationText: {fileID: 0}
 --- !u!114 &8941628339954678840
 MonoBehaviour:
   m_ObjectHideFlags: 0
