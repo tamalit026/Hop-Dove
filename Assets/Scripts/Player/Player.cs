@@ -3,8 +3,9 @@ using UnityEngine;
 
 public sealed class Player : MonoBehaviour
 {
-    [SerializeField] private int health = 100;
-    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int health;
+    [SerializeField] private int maxHealth;
+    [SerializeField] private PlayerStats startingStats = new PlayerStats(100, 100, 5f, 5f);
 
     [SerializeField] private float damageMultiplier = 1f;
     [SerializeField] private float coinsMultiplier = 1.0f;
@@ -31,6 +32,14 @@ public sealed class Player : MonoBehaviour
         AttackComponent = GetComponent<Attack>();
         ControlComponent = GetComponent<Control>();
         animator = GetComponent<Animator>();
+
+        maxHealth = startingStats.MaxHealth;
+        health = Mathf.Clamp(startingStats.Health, 0, maxHealth);
+
+        if (MovementComponent != null)
+        {
+            MovementComponent.Initialize(startingStats.MovementSpeed,startingStats.JumpForce);
+        }
     }
     private void Start()
     {

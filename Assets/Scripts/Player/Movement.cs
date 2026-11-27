@@ -3,8 +3,8 @@ using UnityEngine;
 //TP2 - Eileen Moscovich.
 public sealed class Movement : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float jumpForce = 5f;
+    private float moveSpeed;
+    private float jumpForce;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -42,6 +42,11 @@ public sealed class Movement : MonoBehaviour
         {
             canDoubleJump = true;
         }
+    }
+    public void Initialize(float speed, float jump)
+    {
+        moveSpeed = speed;
+        jumpForce = jump;
     }
     public void Move(float direction)
     {

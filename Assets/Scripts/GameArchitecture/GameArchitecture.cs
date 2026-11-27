@@ -39,8 +39,6 @@ public struct PlayerStats
     }
 }
 
-public delegate void GameStateEventHandler(GameState newState);
-
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
