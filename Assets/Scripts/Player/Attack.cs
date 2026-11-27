@@ -1,55 +1,42 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using static Unity.Burst.Intrinsics.X86.Avx;
 
-public class Attack : MonoBehaviour
+//TP2 - Eileen Moscovich.
+public sealed class Attack : MonoBehaviour
 {
     [SerializeField] private int damage = 20;
-    [SerializeField] private float attackRange = 2.0f;
-    [SerializeField] private Transform attackPoint;
+    [SerializeField] private float attackCooldown = 0.8f;
 
     private Animator animator;
-    private SpriteRenderer spriteRenderer;
+    private Player player;
+    private AttackHitbox attackHitbox;
 
+    private float nextAttackTime;
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        player = GetComponent<Player>();
+        attackHitbox = GetComponent<AttackHitbox>();
     }
     public void AttackTarget()
     {
+        if (Time.time < nextAttackTime) return;
+
+        nextAttackTime = Time.time + attackCooldown;
+
+        AudioManager.Instance.PlaySFX(SoundEffect.Attack);
+
         if (animator != null)
         {
             animator.SetTrigger("Attack");
         }
-
-        Vector2 origin = attackPoint != null ? (Vector2)attackPoint.position : (Vector2)transform.position;
-        float direction = (spriteRenderer != null && spriteRenderer.flipX) ? -1f : 1f;
-        Vector2 attackCenter = origin + new Vector2(direction * (attackRange * 0.5f), 0);
-
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(attackCenter, attackRange);
-        foreach (Collider2D col in hitColliders)
-        {
-            Enemy enemy = col.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-            }
-
-            Chest chest = col.GetComponent<Chest>();
-            if (chest != null)
-            {
-                chest.Open();
-            }
-        }
     }
-    private void OnDrawGizmosSelected()
+    public void DealDamage(Enemy enemy)
     {
-        Vector2 origin = attackPoint != null ? (Vector2)attackPoint.position : (Vector2)transform.position; 
-        float direction = (spriteRenderer != null && spriteRenderer.flipX) ? -1f : 1f; 
-        Vector2 attackCenter = origin + new Vector2(direction * (attackRange * 0.5f), 0);
+        if (enemy == null) return;
 
-        Gizmos.color = Color.red; 
-        Gizmos.DrawWireSphere(attackCenter, attackRange);
+        float multiplier = player != null ? player.DamageMultiplier : 1f;
+        int finalDamage = Mathf.RoundToInt(damage * multiplier);
+
+        enemy.TakeDamage(finalDamage);
     }
 }

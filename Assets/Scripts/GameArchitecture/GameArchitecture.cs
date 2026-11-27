@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
+//TP2 - Eileen Moscovich.
 public enum GameState
 {
     MainMenu,
@@ -20,7 +18,8 @@ public enum SoundEffect
     Heal,
     PowerUp,
     Victory,
-    Defeat
+    Defeat,
+    Hover
 }
 
 [System.Serializable]
@@ -61,16 +60,13 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             return _instance;
         }
     }
-
-
-
     protected virtual void Awake()
     {
         if (_instance == null)
         {
             _instance = this as T;
             transform.SetParent(null);
-            //DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
         {

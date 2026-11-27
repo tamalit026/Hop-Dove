@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class Control : MonoBehaviour
+//TP2 - Eileen Moscovich.
+public sealed class Control : MonoBehaviour
 {
     private Player player;
 

@@ -1,30 +1,30 @@
 using UnityEngine;
+using System.Collections;
 
-public class Chest : MonoBehaviour, IInteractable
+public sealed class Chest : MonoBehaviour, IInteractable
 {
     [SerializeField] private int antAmount = 5;
-    [SerializeField] private bool isOpen = false;
+    [SerializeField] private float spawnDelay = 0.25f;
     [SerializeField] private GameObject antPrefab;
 
     [SerializeField] private Sprite closedSprite;
     [SerializeField] private Sprite openSprite;
 
+    private bool isOpen = false;
     private SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null && closedSprite != null)
-        {
-            spriteRenderer.sprite = closedSprite;
-        }
-    }
 
+        if (spriteRenderer != null && closedSprite != null)
+            spriteRenderer.sprite = closedSprite;
+    }
     public void Interact(Player player)
     {
-        if (!isOpen) Open();
+        if (player != null)
+            Open();
     }
-
     public void Open()
     {
         if (isOpen) return;
@@ -32,35 +32,24 @@ public class Chest : MonoBehaviour, IInteractable
         isOpen = true;
 
         if (spriteRenderer != null && openSprite != null)
-        {
             spriteRenderer.sprite = openSprite;
-        }
 
-        SpawnAnt();
+        StartCoroutine(SpawnAntRoutine());
     }
-
-    public void SpawnAnt()
+    private IEnumerator SpawnAntRoutine()
     {
         if (antPrefab == null)
         {
-            Debug.LogWarning("No anda el prefab");
-            return;
+            yield break;
         }
 
         for (int i = 0; i < antAmount; i++)
         {
-            if (antPrefab != null)
-            {
-                Vector3 spawnOffset = new Vector3(Random.Range(-0.8f, 0.8f), 1.2f, 0);
-                Instantiate(antPrefab, transform.position + spawnOffset, Quaternion.identity);
-            }
-        }
-    }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.GetComponent<Player>() != null || collision.CompareTag("Player") || collision.gameObject.name.Contains("Attack"))
-        {
-            Open();
+            Vector3 spawnOffset = new Vector3(Random.Range(-1f, 1f),Random.Range(0.8f, 1.5f),0f);
+            
+            Instantiate(antPrefab, transform.position + spawnOffset, Quaternion.identity);
+
+            yield return new WaitForSeconds(spawnDelay);
         }
     }
 }

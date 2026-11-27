@@ -1,155 +1,113 @@
 using System.Collections;
 using UnityEngine;
 
-public class Eagle : Enemy
+public sealed class Eagle : Enemy
 {
-    [SerializeField] private float grabHeight = 2f;
-    [SerializeField] private float grabDuration = 3f;
-    [SerializeField] private float attackCooldown = 2f;
-    [SerializeField] private Transform grabPoint;
+    [SerializeField] private float grabHeight = 1.5f;    
+    [SerializeField] private float grabDuration = 2f;    
+    [SerializeField] private float attackCooldown = 3f;  
+    [SerializeField] private Transform grabPoint;      
 
-    private Player targetPlayer;
-    private Player grabbedPlayer;
-    private Transform originalParent;
-    private Animator animator;
-
-    private float nextAttackTime;
+    private Player grabbedPlayer;         
+    private Transform originalParent;      
     private Coroutine grabCoroutine;
-    private bool isDead;
+    private bool isAttackPending;
 
-    private void Awake()
+    protected override void Awake()
     {
-        animator = GetComponent<Animator>();
+        base.Awake();          
+        detectionRange = 5f;   
     }
-
-    private void Start()
+    protected override void Update()
     {
-        targetPlayer = FindFirstObjectByType<Player>();
-    }
+        base.Update();         
 
-    private void Update()
-    {
-        if (isDead || grabbedPlayer != null)
-            return;
-
-        if (Time.time < nextAttackTime)
-            return;
-
-        if (targetPlayer == null)
-            targetPlayer = FindFirstObjectByType<Player>();
-
-        if (DetectPlayer(targetPlayer))
-        {
+        if (isDead) return;                
+        if (grabbedPlayer != null) return; 
+        if (Time.time < nextAttackTime) return; 
+        
+        if (targetPlayer != null && DetectPlayer(targetPlayer))
             Attack();
-        }
     }
-
-    public override void TakeDamage(int damageAmount)
+    public override bool DetectPlayer(Player player)
     {
-        if (isDead)
-            return;
+        if (player == null) return false;
+        if (player.IsInvulnerable) return false; 
 
-        health -= damageAmount;
+        if (Vector2.Distance(transform.position, player.transform.position) > detectionRange)
+            return false;
 
-        if (health <= 0)
-        {
-            isDead = true;
-
-            if (grabbedPlayer != null)
-                DropPlayer(grabbedPlayer);
-
-            Destroy(gameObject);
-        }
+        return Mathf.Abs(transform.position.y - player.transform.position.y) <= grabHeight;
     }
 
     public override void Attack()
     {
-        if (isDead || grabbedPlayer != null)
-            return;
+        if (grabbedPlayer != null || isAttackPending) return;
 
-        if (Time.time < nextAttackTime)
-            return;
+        isAttackPending = true;
 
-        if (!DetectPlayer(targetPlayer))
-            return;
+        animator?.SetTrigger("Attack");
 
-        if (animator != null)
-            animator.SetTrigger("Attack");
-
-        GrabPlayer(targetPlayer);
+        Invoke(nameof(GrabPlayer), 0.3f);
     }
-
-    public override bool DetectPlayer(Player player)
+    private void GrabPlayer()
     {
-        if (player == null)
-            return false;
+        isAttackPending = false;
 
-        if (player.IsInvulnerable)
-            return false;
+        if (isDead || grabbedPlayer != null) return;
 
-        return Vector2.Distance(
-            transform.position,
-            player.transform.position
-        ) <= grabHeight;
-    }
+        if (targetPlayer == null) return;
 
-    public void GrabPlayer(Player player)
-    {
-        if (isDead || player == null || grabbedPlayer != null)
-            return;
+        if (!DetectPlayer(targetPlayer)) return;
 
-        if (player.IsInvulnerable)
-            return;
-
-        grabbedPlayer = player;
-        originalParent = player.transform.parent;
+        grabbedPlayer = targetPlayer;
+        originalParent = grabbedPlayer.transform.parent; 
 
         if (grabPoint != null)
         {
-            player.transform.SetParent(grabPoint);
-            player.transform.localPosition = Vector3.zero;
+            grabbedPlayer.transform.SetParent(grabPoint);
+            grabbedPlayer.transform.localPosition = Vector3.zero;
         }
         else
         {
-            player.transform.SetParent(transform);
-        }
+            grabbedPlayer.transform.SetParent(transform);
+            grabbedPlayer.transform.localPosition = Vector3.zero;
+        };
 
         grabbedPlayer.TakeDamage(damage);
 
+
         grabCoroutine = StartCoroutine(GrabRoutine());
     }
-
-    public void DropPlayer(Player player)
+    private IEnumerator GrabRoutine()
     {
-        if (grabbedPlayer == null || grabbedPlayer != player)
-            return;
+        yield return new WaitForSeconds(grabDuration);
+        DropPlayer();
+    }
+    private void DropPlayer()
+    {
+        if (grabbedPlayer == null) return;
+
+        grabbedPlayer.transform.SetParent(originalParent);
+        grabbedPlayer = null;
+        originalParent = null;
+
+        nextAttackTime = Time.time + attackCooldown;
 
         if (grabCoroutine != null)
         {
             StopCoroutine(grabCoroutine);
             grabCoroutine = null;
         }
-
-        grabbedPlayer.transform.SetParent(originalParent);
-
-        grabbedPlayer = null;
-        originalParent = null;
-
-        nextAttackTime = Time.time + attackCooldown;
     }
-
-    private IEnumerator GrabRoutine()
+    protected override void Die()
     {
-        yield return new WaitForSeconds(grabDuration);
-
-        grabCoroutine = null;
-
-        DropPlayer(grabbedPlayer);
+        DropPlayer();   
+        base.Die();    
     }
 
     private void OnDisable()
     {
-        if (grabbedPlayer != null)
-            DropPlayer(grabbedPlayer);
+        DropPlayer();  
     }
 }

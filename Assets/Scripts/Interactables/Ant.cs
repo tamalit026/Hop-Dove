@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Ant : MonoBehaviour, IInteractable
+public sealed class Ant : MonoBehaviour, IInteractable
 {
     [SerializeField] private int value = 10;
 
@@ -9,6 +9,7 @@ public class Ant : MonoBehaviour, IInteractable
     {
         if (player != null)
         {
+            AudioManager.Instance.PlaySFX(SoundEffect.PickupCoin);
             player.AddScore(value);
             Destroy(gameObject);
         }

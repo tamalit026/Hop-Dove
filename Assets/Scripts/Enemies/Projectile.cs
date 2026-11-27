@@ -1,33 +1,59 @@
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public sealed class Projectile : MonoBehaviour
 {
     [SerializeField] private int damage = 15;
     [SerializeField] private float speed = 8f;
-    [SerializeField] private Vector2 direction = Vector2.left;
+    [SerializeField] private float lifetime = 5f;
+    [SerializeField] private bool destroyOnAnyHit = true;
 
-    private Rigidbody2D rb;
+    private Vector2 direction = Vector2.left;
+    private bool launched = false;
+    private bool hasHit = false;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.isTrigger = true;
     }
-
     public void Launch(Vector2 dir)
     {
+        if (launched) return;                 
+        if (dir.sqrMagnitude < 0.0001f) return;
+
         direction = dir.normalized;
-        if (rb != null) rb.linearVelocity = direction * speed;
-    }
+        launched = true;
 
-    public void HitPlayer(Player player)
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        Destroy(gameObject, lifetime);
+    }
+    private void Update()
     {
-        if (player != null) player.TakeDamage(damage);
-        Destroy(gameObject);
+        if (!launched || hasHit) return;
+        transform.position += (Vector3)(direction * speed * Time.deltaTime);
     }
-
+    public void HitPlayer(Player player) { }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Player player = collision.GetComponent<Player>();
-        if (player != null) HitPlayer(player);
+        if (hasHit) return;
+
+        Player player = collision.GetComponent<Player>()
+                     ?? collision.GetComponentInParent<Player>();
+
+        if (player != null)
+        {
+            hasHit = true;
+            player.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
+        }
+
+        if (destroyOnAnyHit && !collision.isTrigger)
+        {
+            hasHit = true;
+            Destroy(gameObject);
+        }
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Dragonfly : MonoBehaviour, IInteractable
+public sealed class Dragonfly : MonoBehaviour, IInteractable
 {
     [SerializeField] private PowerUp powerUp;
 
