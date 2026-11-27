@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+//TP2 - Agustina Mendiri
+
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private Image healthBarFill;

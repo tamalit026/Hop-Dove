@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//TP2 - Agustina Mendiri
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private string mainMenuSceneName = "MainMenu";

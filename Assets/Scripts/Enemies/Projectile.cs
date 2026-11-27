@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//TP2 - Agustina Mendiri
 public sealed class Projectile : MonoBehaviour
 {
     [SerializeField] private int damage = 15;

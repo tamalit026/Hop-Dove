@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
+//TP2 - Itamar Graterol
 public sealed class Ant : MonoBehaviour, IInteractable
 {
     [SerializeField] private int value = 10;

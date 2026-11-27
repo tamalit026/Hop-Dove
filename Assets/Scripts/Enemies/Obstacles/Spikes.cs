@@ -1,5 +1,7 @@
 using UnityEngine;
 
+//TP2 - Agustina Mendiri
+
 public sealed class Spikes : Obstacle
 {
     [SerializeField] private float knockbackForce = 8f;

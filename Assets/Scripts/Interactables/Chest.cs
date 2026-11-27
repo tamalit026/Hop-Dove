@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+//TP2 - Itamar Graterol
+
 public sealed class Chest : MonoBehaviour, IInteractable
 {
     [SerializeField] private int antAmount = 5;

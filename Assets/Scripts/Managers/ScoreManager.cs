@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+//TP2 - Agustina Mendiri
 public class ScoreManager : Singleton<ScoreManager>
 {
     [SerializeField] private int currentScore = 0;
